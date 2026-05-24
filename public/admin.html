@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>後台管理 - olienAI</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="admin-page">
+    <header class="topbar" id="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">O</span>
+        <span>olienAI</span>
+      </a>
+      <nav class="nav" aria-label="後台導覽">
+        <a href="/">前台</a>
+        <a href="/admin" aria-current="page">後台</a>
+      </nav>
+    </header>
+
+    <main class="admin-shell">
+      <section id="login-panel" class="login-panel">
+        <div>
+          <p class="eyebrow">Admin</p>
+          <h1>後台管理</h1>
+          <p>登入後可以新增、修改、刪除分類與內容。</p>
+        </div>
+        <form id="login-form" class="stack-form">
+          <label>
+            <span>管理密碼</span>
+            <input id="password-input" type="password" autocomplete="current-password" placeholder="預設：admin123" required>
+          </label>
+          <button class="button primary" type="submit">登入後台</button>
+          <p id="login-message" class="form-message" role="status"></p>
+        </form>
+      </section>
+
+      <section id="admin-panel" class="admin-layout" hidden>
+        <aside class="admin-sidebar">
+          <div class="panel-title">
+            <h1>內容管理</h1>
+            <button id="logout-button" class="button ghost" type="button">登出</button>
+          </div>
+          <button id="save-button" class="button primary full" type="button">儲存全部變更</button>
+          <p id="save-message" class="form-message" role="status"></p>
+
+          <div class="admin-section">
+            <h2>網站資訊</h2>
+            <label>
+              <span>網站標題</span>
+              <input id="site-title-input" type="text">
+            </label>
+            <label>
+              <span>網站說明</span>
+              <textarea id="site-subtitle-input" rows="4"></textarea>
+            </label>
+          </div>
+
+          <div class="admin-section">
+            <div class="section-row">
+              <h2>分類</h2>
+              <button id="add-category-button" class="icon-button" type="button" title="新增分類">+</button>
+            </div>
+            <div id="category-list" class="editable-list"></div>
+          </div>
+        </aside>
+
+        <section class="admin-main">
+          <div class="section-row">
+            <div>
+              <p class="eyebrow">Resources</p>
+              <h2>提示詞與連結</h2>
+            </div>
+            <button id="add-item-button" class="button primary" type="button">新增內容</button>
+          </div>
+
+          <div id="item-editor-list" class="item-editor-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <template id="category-editor-template">
+      <article class="mini-editor">
+        <label>
+          <span>分類名稱</span>
+          <input data-field="name" type="text">
+        </label>
+        <label>
+          <span>分類說明</span>
+          <textarea data-field="description" rows="2"></textarea>
+        </label>
+        <button class="button danger" data-action="delete-category" type="button">刪除分類</button>
+      </article>
+    </template>
+
+    <template id="item-editor-template">
+      <article class="item-editor">
+        <div class="item-editor-head">
+          <h3></h3>
+          <button class="button danger" data-action="delete-item" type="button">刪除</button>
+        </div>
+        <div class="field-grid">
+          <label>
+            <span>標題</span>
+            <input data-field="title" type="text">
+          </label>
+          <label>
+            <span>分類</span>
+            <select data-field="categoryId"></select>
+          </label>
+          <label class="wide">
+            <span>外部連結</span>
+            <input data-field="url" type="url" placeholder="https://...">
+          </label>
+          <label class="wide">
+            <span>簡短說明</span>
+            <textarea data-field="description" rows="3"></textarea>
+          </label>
+          <label class="wide">
+            <span>提示詞內容</span>
+            <textarea data-field="prompt" rows="5"></textarea>
+          </label>
+          <label class="wide">
+            <span>標籤，用逗號分隔</span>
+            <input data-field="tags" type="text" placeholder="教案, AI, 教材">
+          </label>
+        </div>
+      </article>
+    </template>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>
