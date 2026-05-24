@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>olienAI</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar" id="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">O</span>
+        <span>olienAI</span>
+      </a>
+      <nav class="nav public-nav" aria-label="前台導覽">
+        <a href="#content-grid">提示詞資料</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="intro" aria-labelledby="site-title">
+        <div>
+          <p class="eyebrow">Prompts & Links</p>
+          <h1 id="site-title">olienAI</h1>
+          <p id="site-subtitle">常用提示詞、AI 工具與外部教學資源集中整理</p>
+        </div>
+      </section>
+
+      <section class="filter-panel" aria-label="快速篩選">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">Filter</p>
+            <h2>快速篩選提示詞資料</h2>
+          </div>
+          <button id="reset-filters" class="button ghost" type="button">清除篩選</button>
+        </div>
+
+        <div class="filter-grid">
+          <label class="search-box">
+            <span>關鍵字搜尋</span>
+            <input id="search-input" type="search" placeholder="輸入提示詞、工具、標籤或網址">
+          </label>
+
+          <label>
+            <span>分類</span>
+            <select id="category-select"></select>
+          </label>
+
+          <div class="type-filter">
+            <span>資料類型</span>
+            <div id="type-filter" class="segmented-control" role="group" aria-label="資料類型">
+              <button class="type-button" type="button" data-type="all" aria-pressed="true">全部</button>
+              <button class="type-button" type="button" data-type="prompt" aria-pressed="false">有提示詞</button>
+              <button class="type-button" type="button" data-type="link" aria-pressed="false">只有連結</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tag-filter">
+          <span>熱門標籤</span>
+          <div id="tag-chips" class="chip-list" aria-label="標籤篩選"></div>
+        </div>
+      </section>
+
+      <section id="content-grid" class="content-grid" aria-live="polite"></section>
+      <section id="empty-state" class="empty-state" hidden>
+        <h2>目前沒有符合的內容</h2>
+        <p>試著換一個關鍵字，或切換其他分類與標籤。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer" aria-label="網站瀏覽統計">
+      <span>瀏覽次數</span>
+      <strong id="view-count">0</strong>
+    </footer>
+
+    <template id="card-template">
+      <article class="resource-card">
+        <div class="card-head">
+          <span class="category-pill"></span>
+          <span class="tag-list"></span>
+        </div>
+        <h2></h2>
+        <p class="description"></p>
+        <pre class="prompt-preview"></pre>
+        <div class="card-actions">
+          <a class="button primary" target="_blank" rel="noopener noreferrer">開啟連結</a>
+          <button class="button copy-button" type="button">複製提示詞</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
