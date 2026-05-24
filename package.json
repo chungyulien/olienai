@@ -1,0 +1,12 @@
+{
+  "name": "prompt-link-hub",
+  "version": "1.0.0",
+  "description": "A small website for organizing prompt collections and external links.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
