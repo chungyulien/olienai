@@ -1,0 +1,53 @@
+{
+  "site": {
+    "title": "olienAI",
+    "subtitle": "常用提示詞、AI 工具與外部教學資源集中整理"
+  },
+  "categories": [
+    {
+      "id": "teaching",
+      "name": "華語教學",
+      "description": "課程設計、活動發想與教材製作相關提示詞。"
+    },
+    {
+      "id": "ai-tools",
+      "name": "AI 工具",
+      "description": "常用 AI 平台、文件工具與創作服務。"
+    },
+    {
+      "id": "references",
+      "name": "參考資料",
+      "description": "可快速開啟的外部網站、規範與學習資源。"
+    }
+  ],
+  "items": [
+    {
+      "id": "lesson-plan",
+      "categoryId": "teaching",
+      "title": "50 分鐘課程設計提示詞",
+      "description": "輸入主題、程度與學生背景後，產出完整教案流程與活動安排。",
+      "url": "https://chatgpt.com/",
+      "prompt": "請依據主題、學生程度、課程時間與教學目標，設計一份 50 分鐘華語課教案，包含暖身、輸入、練習、產出與評量。",
+      "tags": ["教案", "華語", "活動"]
+    },
+    {
+      "id": "openai-docs",
+      "categoryId": "ai-tools",
+      "title": "OpenAI 文件",
+      "description": "查詢 OpenAI API 與模型使用方式。",
+      "url": "https://platform.openai.com/docs",
+      "prompt": "",
+      "tags": ["API", "AI"]
+    },
+    {
+      "id": "tocfl",
+      "categoryId": "references",
+      "title": "華語文能力測驗",
+      "description": "TOCFL 官方網站與測驗資訊。",
+      "url": "https://tocfl.edu.tw/",
+      "prompt": "",
+      "tags": ["TOCFL", "測驗"]
+    }
+  ],
+  "updatedAt": "2026-05-24T00:00:00.000Z"
+}
