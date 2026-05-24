@@ -49,6 +49,24 @@ PORT=3000
 
 GitHub Pages 不適合這個版本，因為後台儲存與瀏覽統計需要 Node.js 伺服器。
 
+## 免費但較穩的資料保存方式
+
+Render Free 可以繼續使用，但建議把資料放到免費 PostgreSQL，例如 Supabase 或 Neon。
+
+網站支援 `DATABASE_URL`：
+
+- 沒有設定 `DATABASE_URL`：使用 `data/content.json` 和 `data/stats.json`
+- 設定 `DATABASE_URL`：自動建立資料表，後台內容與瀏覽次數會保存到 PostgreSQL
+
+Render 環境變數建議：
+
+```bash
+DATABASE_URL=你的 Supabase 或 Neon PostgreSQL 連線字串
+ADMIN_PASSWORD=你的後台密碼
+```
+
+第一次接上資料庫時，系統會把 GitHub 裡的初始 `data/content.json` 和 `data/stats.json` 匯入資料庫。
+
 ## Docker 部署
 
 ```bash

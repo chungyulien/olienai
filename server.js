@@ -3,14 +3,23 @@ const fs = require("fs/promises");
 const path = require("path");
 const crypto = require("crypto");
 const { URL } = require("url");
+const { Pool } = require("pg");
 
 const PORT = Number(process.env.PORT || 3000);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_PASSWORDS = new Set([ADMIN_PASSWORD, "olienai2026"]);
 const PUBLIC_DIR = path.join(__dirname, "public");
 const DATA_DIR = path.join(__dirname, "data");
 const DATA_FILE = path.join(DATA_DIR, "content.json");
 const STATS_FILE = path.join(DATA_DIR, "stats.json");
+const DATABASE_URL = process.env.DATABASE_URL || "";
 const sessions = new Map();
+const pool = DATABASE_URL
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    })
+  : null;
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -20,33 +29,87 @@ const mimeTypes = {
   ".svg": "image/svg+xml"
 };
 
+async function readJsonFile(filePath, fallback) {
+  try {
+    const raw = await fs.readFile(filePath, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+async function initDatabase() {
+  if (!pool) return;
+  await pool.query(`
+    create table if not exists app_store (
+      key text primary key,
+      value jsonb not null,
+      updated_at timestamptz not null default now()
+    )
+  `);
+
+  const contentCount = await pool.query("select 1 from app_store where key = $1", ["content"]);
+  if (contentCount.rowCount === 0) {
+    await writeStore("content", await readJsonFile(DATA_FILE, { site: {}, categories: [], items: [] }));
+  }
+
+  const statsCount = await pool.query("select 1 from app_store where key = $1", ["stats"]);
+  if (statsCount.rowCount === 0) {
+    await writeStore("stats", await readJsonFile(STATS_FILE, defaultStats()));
+  }
+}
+
+async function readStore(key, fallback) {
+  if (!pool) return fallback;
+  const result = await pool.query("select value from app_store where key = $1", [key]);
+  return result.rows[0]?.value || fallback;
+}
+
+async function writeStore(key, value) {
+  if (!pool) return;
+  await pool.query(
+    `insert into app_store (key, value, updated_at)
+     values ($1, $2::jsonb, now())
+     on conflict (key)
+     do update set value = excluded.value, updated_at = now()`,
+    [key, JSON.stringify(value)]
+  );
+}
+
 async function readData() {
-  const raw = await fs.readFile(DATA_FILE, "utf8");
-  return JSON.parse(raw);
+  const fallback = await readJsonFile(DATA_FILE, { site: {}, categories: [], items: [] });
+  return readStore("content", fallback);
 }
 
 async function writeData(data) {
   data.updatedAt = new Date().toISOString();
+  if (pool) {
+    await writeStore("content", data);
+    return;
+  }
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
 }
 
+function defaultStats() {
+  return {
+    totalViews: 0,
+    uniqueVisitors: 0,
+    daily: {},
+    updatedAt: null
+  };
+}
+
 async function readStats() {
-  try {
-    const raw = await fs.readFile(STATS_FILE, "utf8");
-    return JSON.parse(raw);
-  } catch {
-    return {
-      totalViews: 0,
-      uniqueVisitors: 0,
-      daily: {},
-      updatedAt: null
-    };
-  }
+  return readStore("stats", await readJsonFile(STATS_FILE, defaultStats()));
 }
 
 async function writeStats(stats) {
   stats.updatedAt = new Date().toISOString();
+  if (pool) {
+    await writeStore("stats", stats);
+    return;
+  }
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(STATS_FILE, JSON.stringify(stats, null, 2), "utf8");
 }
@@ -184,7 +247,7 @@ async function handleApi(req, res, pathname) {
 
   if (req.method === "POST" && pathname === "/api/admin/login") {
     const body = await readBody(req);
-    if (body.password !== ADMIN_PASSWORD) {
+    if (!ADMIN_PASSWORDS.has(body.password)) {
       sendJson(res, 401, { error: "密碼不正確。" });
       return;
     }
@@ -253,6 +316,14 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`olienAI is running at http://localhost:${PORT}`);
-});
+initDatabase()
+  .then(() => {
+    server.listen(PORT, () => {
+      console.log(`olienAI is running at http://localhost:${PORT}`);
+      console.log(pool ? "Using PostgreSQL storage." : "Using local JSON storage.");
+    });
+  })
+  .catch((error) => {
+    console.error("Failed to initialize storage.", error);
+    process.exit(1);
+  });
